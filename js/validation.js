@@ -31,6 +31,44 @@ function createItem(taskText) {
         item.remove()
         updateTaskCount(-1)
     })
+
+    const editBtn = item.querySelector(".edit-btn")
+    editBtn.addEventListener("click", function () {
+        Swal.fire({
+            title: "Edit your text",
+            input: "textarea",
+            inputValue: text.textContent,
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            showLoaderOnConfirm: true,
+            preConfirm: async (text) => {
+                try {
+                    if (!text) {
+                        throw new Error("Text cannot be empty");
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    return text;
+                } catch (error) {
+                    Swal.showValidationMessage(
+                        `Error: ${error.message}`
+                    );
+                }
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "Text Saved",
+                    text: result.value,
+                    icon: "success"
+                });
+                text.textContent = result.value
+            }
+        });
+    })
     return item;
 
 }
